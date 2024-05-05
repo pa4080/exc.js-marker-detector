@@ -25,6 +25,11 @@
 
       const ctx = myCanvas.getContext("2d");
 
+      const loop = () => {
+        ctx.drawImage(myVideo, 0, 0, myCanvas.width, myCanvas.height);
+        requestAnimationFrame(loop);
+      };
+
       navigator.mediaDevices
         .getUserMedia({ video: true })
         .then((rawData) => {
@@ -35,7 +40,7 @@
             myCanvas.width = myVideo.videoWidth;
             myCanvas.height = myVideo.videoHeight;
 
-            ctx.drawImage(myVideo, 0, 0, myCanvas.width, myCanvas.height);
+            loop();
           };
         })
         .catch((error) => alert(error));
