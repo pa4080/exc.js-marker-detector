@@ -17,10 +17,10 @@
     </style>
   </head>
   <body>
-    <video id="myVideo"></video>
+    <!-- <video id="myVideo"></video> -->
     <canvas id="myCanvas"></canvas>
     <script>
-      const myVideo = document.getElementById("myVideo");
+      const myVideo = document.createElement("video");
       const myCanvas = document.getElementById("myCanvas");
 
       const ctx = myCanvas.getContext("2d");
