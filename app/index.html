@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Marker Detector</title>
+    <title>Blue Marker Detector</title>
     <style>
       video {
         border: 2px solid gray;
@@ -19,31 +19,22 @@
   <body>
     <!-- <video id="myVideo"></video> -->
     <canvas id="myCanvas"></canvas>
+    <script src="markerDetector.js"></script>
     <script>
       const myVideo = document.createElement("video");
       const myCanvas = document.getElementById("myCanvas");
-
       const ctx = myCanvas.getContext("2d");
+      const markerDetector = new MarkerDetector({ debug: true });
 
       const loop = () => {
         ctx.drawImage(myVideo, 0, 0, myCanvas.width, myCanvas.height);
-
-        const imgData = ctx.getImageData(0, 0, myCanvas.width, myCanvas.height);
-        debugger;
-
         /**
-         * The imgData object looks as below,
-         * data[] is a giant array where each four values represents each pixel,
-         * row by row, so there must have "4 x 640 x 480" values in that array.
-         *
-        imgData: {
-          data: [red, green, blue, opacity, ..., red, green, blue, opacity, ...],
-          colorSpace: "srgb",
-          height: 480,
-          width: 640,
-        }
-        */
-
+         * imgData.data[] is an array where each four values represents each pixel,
+         * row by row, so there must have "4 x 640 x 480" members in that array.
+         * > imgData: { data: [red, green, blue, opacity, ...], colorSpace: "srgb", height: 480, width: 640, }
+         */
+        const imgData = ctx.getImageData(0, 0, myCanvas.width, myCanvas.height);
+        markerDetector.detect(imgData);
         requestAnimationFrame(loop);
       };
 
