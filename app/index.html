@@ -27,6 +27,23 @@
 
       const loop = () => {
         ctx.drawImage(myVideo, 0, 0, myCanvas.width, myCanvas.height);
+
+        const imgData = ctx.getImageData(0, 0, myCanvas.width, myCanvas.height);
+        debugger;
+
+        /**
+         * The imgData object looks as below,
+         * data[] is a giant array where each four values represents each pixel,
+         * row by row, so there must have "4 x 640 x 480" values in that array.
+         *
+        imgData: {
+          data: [red, green, blue, opacity, ..., red, green, blue, opacity, ...],
+          colorSpace: "srgb",
+          height: 480,
+          width: 640,
+        }
+        */
+
         requestAnimationFrame(loop);
       };
 
