@@ -9,15 +9,36 @@
         border: 2px solid gray;
         border-radius: 8px;
       }
+
+      canvas {
+        border: 2px solid blue;
+        border-radius: 8px;
+      }
     </style>
   </head>
   <body>
     <video id="myVideo"></video>
+    <canvas id="myCanvas"></canvas>
     <script>
-      navigator.mediaDevices.getUserMedia({ video: true }).then((rawData) => {
-        myVideo.srcObject = rawData;
-        myVideo.play();
-      });
+      const myVideo = document.getElementById("myVideo");
+      const myCanvas = document.getElementById("myCanvas");
+
+      const ctx = myCanvas.getContext("2d");
+
+      navigator.mediaDevices
+        .getUserMedia({ video: true })
+        .then((rawData) => {
+          myVideo.srcObject = rawData;
+          myVideo.play();
+
+          myVideo.onloadeddata = () => {
+            myCanvas.width = myVideo.videoWidth;
+            myCanvas.height = myVideo.videoHeight;
+
+            ctx.drawImage(myVideo, 0, 0, myCanvas.width, myCanvas.height);
+          };
+        })
+        .catch((error) => alert(error));
     </script>
   </body>
 </html>
