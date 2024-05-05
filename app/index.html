@@ -7,11 +7,17 @@
     <style>
       video {
         border: 2px solid gray;
-        border-radius: 4px;
+        border-radius: 8px;
       }
     </style>
   </head>
   <body>
-    <video src=""></video>
+    <video id="myVideo"></video>
+    <script>
+      navigator.mediaDevices.getUserMedia({ video: true }).then((rawData) => {
+        myVideo.srcObject = rawData;
+        myVideo.play();
+      });
+    </script>
   </body>
 </html>
