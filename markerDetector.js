@@ -35,6 +35,12 @@ class MarkerDetector {
     return center;
   }
 
+  #distance(p1, p2) {
+    // Use the Pythagorean theorem (find the hypotenuse)
+    // to get the distance between two points
+    return Math.hypot(p1.x - p2.x, p1.y - p2.y);
+  }
+
   /**
    * Remember each group of 4 members of the data array represents on pixel,
    * so we are going to iterate over the array pixel by pixel.
@@ -62,26 +68,48 @@ class MarkerDetector {
       }
     }
 
-    const centroid = this.#averagePoints(points);
-    const size = Math.sqrt(points.length);
-    const radius = size / 2;
+    // Divide the points into two groups, https://youtu.be/jy-Mxbt0zww?si=VaB9UTIGYc_EWkaj&t=2000
+    const point_first = points[0];
+    const point_last = points[points.length - 1];
+
+    const group_1 = points.filter((p) => this.#distance(p, point_first) < this.#distance(p, point_last));
+    const centroid_1 = this.#averagePoints(group_1);
+    const size_1 = Math.sqrt(group_1.length);
+    const radius_1 = size_1 / 2;
+
+    const group_2 = points.filter((p) => this.#distance(p, point_first) > this.#distance(p, point_last));
+    const centroid_2 = this.#averagePoints(group_2);
+    const size_2 = Math.sqrt(group_2.length);
+    const radius_2 = size_2 / 2;
 
     if (this.debug) {
       // Display only the blue points, https://youtu.be/jy-Mxbt0zww?si=AMdO_Umd8mtuK99_
       this.debugCanvas.width = imageData.width;
       this.debugCanvas.height = imageData.height + 255; // +255 is the space for the chart
 
-      for (const point of points) {
+      this.debugCtx.fillStyle = "red";
+      for (const point of group_1) {
+        this.debugCtx.globalAlpha = point.blueness / 255;
+        this.debugCtx.fillRect(point.x, point.y, 1, 1);
+      }
+
+      this.debugCtx.fillStyle = "orange";
+      for (const point of group_2) {
         this.debugCtx.globalAlpha = point.blueness / 255;
         this.debugCtx.fillRect(point.x, point.y, 1, 1);
       }
 
       // Reset the global alpha, for the next graphs
+      this.debugCtx.fillStyle = "gray";
       this.debugCtx.globalAlpha = 1;
 
       // Display the centroid, https://youtu.be/jy-Mxbt0zww?si=l295VqvCEsSzNQpA&t=1807
       this.debugCtx.beginPath();
-      this.debugCtx.arc(centroid.x, centroid.y, radius, 0, Math.PI * 2);
+      this.debugCtx.arc(centroid_1.x, centroid_1.y, radius_1, 0, Math.PI * 2);
+      this.debugCtx.stroke();
+
+      this.debugCtx.beginPath();
+      this.debugCtx.arc(centroid_2.x, centroid_2.y, radius_2, 0, Math.PI * 2);
       this.debugCtx.stroke();
 
       // Display the chart, https://youtu.be/jy-Mxbt0zww?si=RYCnCRN_aICj_eYh&t=1415
