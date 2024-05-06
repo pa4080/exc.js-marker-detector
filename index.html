@@ -24,7 +24,10 @@
       const myVideo = document.createElement("video");
       const myCanvas = document.getElementById("myCanvas");
       const ctx = myCanvas.getContext("2d");
-      const markerDetector = new MarkerDetector({ debug: true });
+
+      const url = new URL(window.location.href);
+      const debug = url.searchParams.get('debug');
+      const markerDetector = new MarkerDetector({ debug: debug === 'true' || false });
 
       const loop = () => {
         ctx.drawImage(myVideo, 0, 0, myCanvas.width, myCanvas.height);
@@ -34,7 +37,18 @@
          * > imgData: { data: [red, green, blue, opacity, ...], colorSpace: "srgb", height: 480, width: 640, }
          */
         const imgData = ctx.getImageData(0, 0, myCanvas.width, myCanvas.height);
-        markerDetector.detect(imgData);
+        const result = markerDetector.detect(imgData);
+
+        if (result) {
+          for (const key of Object.keys(result)) {
+            const marker = result[key];
+            ctx.fillStyle = marker.color;
+            for (const point of marker.points) {
+              ctx.fillRect(point.x, point.y, 1, 1);
+            }
+          }
+        }
+
         requestAnimationFrame(loop);
       };
 

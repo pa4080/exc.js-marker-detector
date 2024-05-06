@@ -6,17 +6,19 @@ class MarkerDetector {
     this.threshold.type = "range";
     this.threshold.min = 0;
     this.threshold.max = 255;
-    this.threshold.value = 35;
-    document.body.appendChild(this.threshold);
+    this.threshold.value = 40;
 
     this.thresholdDisplay = document.createElement("span");
     this.thresholdDisplay.textContent = this.threshold.value;
     this.thresholdDisplay.style.marginLeft = "8px";
-    document.body.appendChild(this.thresholdDisplay);
 
     if (this.debug) {
       this.debugCanvas = document.createElement("canvas");
       this.debugCtx = this.debugCanvas.getContext("2d");
+
+      document.body.appendChild(this.threshold);
+      document.body.appendChild(this.thresholdDisplay);
+
       document.body.appendChild(this.debugCanvas);
     }
   }
@@ -82,27 +84,39 @@ class MarkerDetector {
       centroid_1 = this.#averagePoints(group_1);
       centroid_2 = this.#averagePoints(group_2);
     }
+
     const size_1 = Math.sqrt(group_1.length);
     const radius_1 = size_1 / 2;
 
     const size_2 = Math.sqrt(group_2.length);
     const radius_2 = size_2 / 2;
 
+    const marker_1 = {
+      centroid: centroid_1,
+      points: group_1,
+      radius: radius_1,
+      color: "red",
+    };
+
+    const marker_2 = {
+      centroid: centroid_2,
+      points: group_2,
+      radius: radius_2,
+      color: "orange",
+    };
+
+
     if (this.debug) {
       // Display only the blue points, https://youtu.be/jy-Mxbt0zww?si=AMdO_Umd8mtuK99_
       this.debugCanvas.width = imageData.width;
       this.debugCanvas.height = imageData.height + 255; // +255 is the space for the chart
 
-      this.debugCtx.fillStyle = "red";
-      for (const point of group_1) {
-        this.debugCtx.globalAlpha = point.blueness / 255;
-        this.debugCtx.fillRect(point.x, point.y, 1, 1);
-      }
-
-      this.debugCtx.fillStyle = "orange";
-      for (const point of group_2) {
-        this.debugCtx.globalAlpha = point.blueness / 255;
-        this.debugCtx.fillRect(point.x, point.y, 1, 1);
+      for (const marker of [marker_1, marker_2]) {
+        this.debugCtx.fillStyle = marker.color;
+        for (const point of marker.points) {
+          this.debugCtx.globalAlpha = point.blueness / 255;
+          this.debugCtx.fillRect(point.x, point.y, 1, 1);
+        }
       }
 
       // Reset the global alpha, for the next graphs
@@ -138,5 +152,10 @@ class MarkerDetector {
         this.debugCtx.fillRect(x, y, 1, 1);
       }
     }
+
+    return {
+      leftMarker: centroid_1.x < centroid_2.x ? marker_1 : marker_2,
+      rightMarker: centroid_1.x < centroid_2.x ? marker_2 : marker_1,
+    };
   }
 }
