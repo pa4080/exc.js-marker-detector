@@ -21,6 +21,20 @@ class MarkerDetector {
     }
   }
 
+  #averagePoints(points) {
+    const center = { x: 0, y: 0 };
+
+    for (const point of points) {
+      center.x += point.x;
+      center.y += point.y;
+    }
+
+    center.x /= points.length;
+    center.y /= points.length;
+
+    return center;
+  }
+
   /**
    * Remember each group of 4 members of the data array represents on pixel,
    * so we are going to iterate over the array pixel by pixel.
@@ -48,6 +62,8 @@ class MarkerDetector {
       }
     }
 
+    const centroid = this.#averagePoints(points);
+
     if (this.debug) {
       // Display only the blue points, https://youtu.be/jy-Mxbt0zww?si=AMdO_Umd8mtuK99_
       this.debugCanvas.width = imageData.width;
@@ -58,8 +74,15 @@ class MarkerDetector {
         this.debugCtx.fillRect(point.x, point.y, 1, 1);
       }
 
-      // Display the chart, https://youtu.be/jy-Mxbt0zww?si=RYCnCRN_aICj_eYh&t=1415
+      // Reset the global alpha, for the next graphs
       this.debugCtx.globalAlpha = 1;
+
+      // Display the centroid, https://youtu.be/jy-Mxbt0zww?si=l295VqvCEsSzNQpA&t=1807
+      this.debugCtx.beginPath();
+      this.debugCtx.arc(centroid.x, centroid.y, 100, 0, Math.PI * 2);
+      this.debugCtx.stroke();
+
+      // Display the chart, https://youtu.be/jy-Mxbt0zww?si=RYCnCRN_aICj_eYh&t=1415
       this.debugCtx.translate(0, imageData.height); // Move the chart to the bottom and start drawing point in the +255 area
 
       points.sort((a, b) => b.blueness - a.blueness);
