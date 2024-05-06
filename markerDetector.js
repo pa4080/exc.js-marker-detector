@@ -85,6 +85,15 @@ class MarkerDetector {
       // Display the chart, https://youtu.be/jy-Mxbt0zww?si=RYCnCRN_aICj_eYh&t=1415
       this.debugCtx.translate(0, imageData.height); // Move the chart to the bottom and start drawing point in the +255 area
 
+      // Draw horizontal line
+      this.debugCtx.beginPath();
+      this.debugCtx.moveTo(0, 0);
+      this.debugCtx.lineTo(this.debugCanvas.width, 0);
+      this.debugCtx.strokeStyle = "gray";
+      this.debugCtx.lineWidth = 2;
+      this.debugCtx.stroke();
+
+      // Display the chart, https://youtu.be/jy-Mxbt0zww?si=RYCnCRN_aICj_eYh&t=1415
       points.sort((a, b) => b.blueness - a.blueness);
 
       for (let i = 0; i < points.length; i++) {
