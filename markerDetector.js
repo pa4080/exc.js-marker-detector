@@ -69,16 +69,22 @@ class MarkerDetector {
     }
 
     // Divide the points into two groups, https://youtu.be/jy-Mxbt0zww?si=VaB9UTIGYc_EWkaj&t=2000
-    const point_first = points[0];
-    const point_last = points[points.length - 1];
+    let centroid_1 = points[0];
+    let centroid_2 = points[points.length - 1];
 
-    const group_1 = points.filter((p) => this.#distance(p, point_first) < this.#distance(p, point_last));
-    const centroid_1 = this.#averagePoints(group_1);
+    let group_1 = [];
+    let group_2 = [];
+
+    for (let i = 0; i < 20; i++) {
+      group_1 = points.filter((p) => this.#distance(p, centroid_1) < this.#distance(p, centroid_2));
+      group_2 = points.filter((p) => this.#distance(p, centroid_1) >= this.#distance(p, centroid_2));
+
+      centroid_1 = this.#averagePoints(group_1);
+      centroid_2 = this.#averagePoints(group_2);
+    }
     const size_1 = Math.sqrt(group_1.length);
     const radius_1 = size_1 / 2;
 
-    const group_2 = points.filter((p) => this.#distance(p, point_first) > this.#distance(p, point_last));
-    const centroid_2 = this.#averagePoints(group_2);
     const size_2 = Math.sqrt(group_2.length);
     const radius_2 = size_2 / 2;
 
