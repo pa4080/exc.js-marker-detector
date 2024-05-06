@@ -2,6 +2,18 @@ class MarkerDetector {
   constructor({ debug = false } = {}) {
     this.debug = debug;
 
+    this.threshold = document.createElement("input");
+    this.threshold.type = "range";
+    this.threshold.min = 0;
+    this.threshold.max = 255;
+    this.threshold.value = 35;
+    document.body.appendChild(this.threshold);
+
+    this.thresholdDisplay = document.createElement("span");
+    this.thresholdDisplay.textContent = this.threshold.value;
+    this.thresholdDisplay.style.marginLeft = "8px";
+    document.body.appendChild(this.thresholdDisplay);
+
     if (this.debug) {
       this.debugCanvas = document.createElement("canvas");
       this.debugCtx = this.debugCanvas.getContext("2d");
@@ -16,6 +28,8 @@ class MarkerDetector {
    */
   detect(imageData) {
     const points = [];
+    this.threshold.style.width = `${imageData.width - 32}px`;
+    this.thresholdDisplay.textContent = this.threshold.value;
 
     for (let i = 0; i < imageData.data.length; i += 4) {
       const r = imageData.data[i + 0];
@@ -25,7 +39,7 @@ class MarkerDetector {
       // Measure the blueness
       const blueness = b - Math.max(r, g);
 
-      if (blueness > 20) {
+      if (blueness > this.threshold.value) {
         // https://youtu.be/jy-Mxbt0zww?si=Vq3R15B0S9uZQSrz&t=1049
         const pixelIndex = i / 4;
         const pixelY = Math.floor(pixelIndex / imageData.width);
@@ -46,7 +60,6 @@ class MarkerDetector {
 
       // Display the chart, https://youtu.be/jy-Mxbt0zww?si=RYCnCRN_aICj_eYh&t=1415
       this.debugCtx.globalAlpha = 1;
-      this.debugCtx.strokeStyle = "red";
       this.debugCtx.translate(0, imageData.height); // Move the chart to the bottom and start drawing point in the +255 area
 
       points.sort((a, b) => b.blueness - a.blueness);
