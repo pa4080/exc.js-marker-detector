@@ -35,12 +35,26 @@ class MarkerDetector {
     }
 
     if (this.debug) {
+      // Display only the blue points, https://youtu.be/jy-Mxbt0zww?si=AMdO_Umd8mtuK99_
       this.debugCanvas.width = imageData.width;
-      this.debugCanvas.height = imageData.height;
+      this.debugCanvas.height = imageData.height + 255; // +255 is the space for the chart
 
       for (const point of points) {
-        this.debugCtx.globalAlpha = point.blueness / 255; // https://youtu.be/jy-Mxbt0zww?si=AMdO_Umd8mtuK99_
+        this.debugCtx.globalAlpha = point.blueness / 255;
         this.debugCtx.fillRect(point.x, point.y, 1, 1);
+      }
+
+      // Display the chart, https://youtu.be/jy-Mxbt0zww?si=RYCnCRN_aICj_eYh&t=1415
+      this.debugCtx.globalAlpha = 1;
+      this.debugCtx.strokeStyle = "red";
+      this.debugCtx.translate(0, imageData.height); // Move the chart to the bottom and start drawing point in the +255 area
+
+      points.sort((a, b) => b.blueness - a.blueness);
+
+      for (let i = 0; i < points.length; i++) {
+        const y = points[i].blueness;
+        const x = (this.debugCanvas.width * i) / points.length;
+        this.debugCtx.fillRect(x, y, 1, 1);
       }
     }
   }
