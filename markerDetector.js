@@ -63,6 +63,8 @@ class MarkerDetector {
     }
 
     const centroid = this.#averagePoints(points);
+    const size = Math.sqrt(points.length);
+    const radius = size / 2;
 
     if (this.debug) {
       // Display only the blue points, https://youtu.be/jy-Mxbt0zww?si=AMdO_Umd8mtuK99_
@@ -79,7 +81,7 @@ class MarkerDetector {
 
       // Display the centroid, https://youtu.be/jy-Mxbt0zww?si=l295VqvCEsSzNQpA&t=1807
       this.debugCtx.beginPath();
-      this.debugCtx.arc(centroid.x, centroid.y, 100, 0, Math.PI * 2);
+      this.debugCtx.arc(centroid.x, centroid.y, radius, 0, Math.PI * 2);
       this.debugCtx.stroke();
 
       // Display the chart, https://youtu.be/jy-Mxbt0zww?si=RYCnCRN_aICj_eYh&t=1415
